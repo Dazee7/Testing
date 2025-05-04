@@ -6560,30 +6560,42 @@ do
 
 
 
-	local Toggle = Tabs.Main:AddToggle("SwitchHealth", {Title = "Healt", Default = false })
+	local unlimitedHealthEnabled = false
 
-	Toggle:OnChanged(function(value)
-		if value then
-			Fluent:Notify({
-				Title = "Unlimited Health",
-				Content = "Activated.",
-				Duration = 4
-			})
-			if game.Players.LocalPlayer.Character.Humanoid.Health < 80 then
-				print("Toggle enabled")
-				game.Players.LocalPlayer.Character.Humanoid.Health = 100
-				wait(2)
+local Toggle = Tabs.Main:AddToggle("SwitchHealth", {
+	Title = "Health",
+	Default = false
+})
+
+Toggle:OnChanged(function(value)
+	unlimitedHealthEnabled = value
+
+	if value then
+		Fluent:Notify({
+			Title = "Unlimited Health",
+			Content = "Activated.",
+			Duration = 4
+		})
+
+		task.spawn(function()
+			while unlimitedHealthEnabled do
+				local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+				if humanoid and humanoid.Health < 80 then
+					print("Toggling health to 100")
+					humanoid.Health = 100
+				end
+				task.wait(2)
 			end
-		else
-			Fluent:Notify({
-				Title = "Unlimited Health",
-				Content = "Unactivated.",
-				Duration = 4
-			})
-			print("Toggle disabled")
-			game.Players.LocalPlayer.Character.Humanoid.Health = 100
-		end
-	end)
+		end)
+	else
+		Fluent:Notify({
+			Title = "Unlimited Health",
+			Content = "Unactivated.",
+			Duration = 4
+		})
+		print("Toggle disabled")
+	end
+end)
 
 
 	local Slider = Tabs.Main:AddSlider("Slider", {
