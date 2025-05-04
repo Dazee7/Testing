@@ -6565,16 +6565,16 @@ do
 	Toggle:OnChanged(function(value)
 		if value then
 			print("Toggle enabled")
-			game.player.LocalPlayer.Character.Humanoid.Health = 10
+			game.Players.LocalPlayer.Character.Humanoid.Health = 10
 			wait(1)
-			game.player.LocalPlayer.Character.Humanoid.Health = 50
+			game.Players.LocalPlayer.Character.Humanoid.Health = 50
 			wait(1)
-			game.player.LocalPlayer.Character.Humanoid.Health = 80
+			game.Players.LocalPlayer.Character.Humanoid.Health = 80
 			wait(1)
-			game.player.LocalPlayer.Character.Humanoid.Health = 100
+			game.Players.LocalPlayer.Character.Humanoid.Health = 100
 		else
 			print("Toggle disabled")
-			game.player.LocalPlayer.Character.Humanoid.Health = 100
+			game.Players.LocalPlayer.Character.Humanoid.Health = 100
 		end
 	end)
 	
