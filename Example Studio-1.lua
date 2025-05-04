@@ -6581,13 +6581,14 @@ do
 	Options.SwitchHealth:SetValue(false)
 
 	local Slider = Tabs.Main:AddSlider("Slider", {
-		Title = "Slider",
+		Title = "Slider Health",
 		Description = "This is a slider",
-		Default = 2,
-		Min = 0,
-		Max = 5,
-		Rounding = 1,
+		Default = 10,
+		Min = 10,
+		Max = 100,
+		Rounding = 10,
 		Callback = function(Value)
+			game.Players.LocalPlayer.Character.Humanoid.Health = value
 			print("Slider was changed:", Value)
 		end
 	})
