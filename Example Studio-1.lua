@@ -6586,7 +6586,8 @@ do
 		Default = 10,
 		Min = 10,
 		Max = 100,
-		Rounding = 10,
+		Rounding = 0,
+    	Increment = 10,
 		Callback = function(Value)
 			game.Players.LocalPlayer.Character.Humanoid.Health = value
 			print("Slider was changed:", Value)
@@ -6594,10 +6595,11 @@ do
 	})
 
 	Slider:OnChanged(function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.Health = value
 		print("Slider changed:", Value)
 	end)
 
-	Slider:SetValue(3)
+	Slider:SetValue(10)
 
 
 
