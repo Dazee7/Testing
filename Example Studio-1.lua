@@ -6564,21 +6564,27 @@ do
 
 	Toggle:OnChanged(function(value)
 		if value then
-			print("Toggle enabled")
-			game.Players.LocalPlayer.Character.Humanoid.Health = 10
-			wait(1)
-			game.Players.LocalPlayer.Character.Humanoid.Health = 50
-			wait(1)
-			game.Players.LocalPlayer.Character.Humanoid.Health = 80
-			wait(1)
-			game.Players.LocalPlayer.Character.Humanoid.Health = 100
+			Fluent:Notify({
+				Title = "Unlimited Health",
+				Content = "Activated.",
+				Duration = 4
+			})
+			if game.Players.LocalPlayer.Character.Humanoid.Health < 80 then
+				print("Toggle enabled")
+				game.Players.LocalPlayer.Character.Humanoid.Health = 100
+				wait(2)
+			end
 		else
+			Fluent:Notify({
+				Title = "Unlimited Health",
+				Content = "Unactivated.",
+				Duration = 4
+			})
 			print("Toggle disabled")
 			game.Players.LocalPlayer.Character.Humanoid.Health = 100
 		end
 	end)
-	
-	Options.SwitchHealth:SetValue(false)
+
 
 	local Slider = Tabs.Main:AddSlider("Slider", {
 		Title = "Slider Health",
@@ -6589,13 +6595,13 @@ do
 		Rounding = 0,
     	Increment = 10,
 		Callback = function(Value)
-			game.Players.LocalPlayer.Character.Humanoid.Health = value
+			game.Players.LocalPlayer.Character.Humanoid.Health = Value
 			print("Slider was changed:", Value)
 		end
 	})
 
 	Slider:OnChanged(function(Value)
-		game.Players.LocalPlayer.Character.Humanoid.Health = value
+		game.Players.LocalPlayer.Character.Humanoid.Health = Value
 		print("Slider changed:", Value)
 	end)
 
