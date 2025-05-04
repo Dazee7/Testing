@@ -6560,7 +6560,7 @@ do
 
 
 
-	local Toggle = Tabs.Main:AddToggle("Switch Health", {Title = "Healt", Default = false })
+	local Toggle = Tabs.Main:AddToggle("SwitchHealth", {Title = "Healt", Default = false })
 
 	Toggle:OnChanged(function(value)
 		if value then
@@ -6578,10 +6578,7 @@ do
 		end
 	end)
 	
-
-	Options.MyToggle:SetValue(false)
-
-
+	Options.SwitchHealth:SetValue(false)
 
 	local Slider = Tabs.Main:AddSlider("Slider", {
 		Title = "Slider",
