@@ -21,6 +21,7 @@ local Mouse = LocalPlayer:GetMouse()
 local httpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
 
 local Mobile
 if RunService:IsStudio() then
@@ -5853,236 +5854,212 @@ end)
 
 task.wait(0.1)
 
--- ⚙️ Persiapan
-local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/zuplae/fluent/main/library.lua"))()
-local RunService = game:GetService("RunService")
 
--- 🪟 Membuat Jendela Utama
+
 local Window = Fluent:CreateWindow({
-    Title = "Debz x Eks One SC " .. Fluent.Version,
-    SubTitle = "Dibuat oleh debrizech & eks one",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(600, 500),
-    Acrylic = true,
-    Theme = "Ocean",
-    MinimizeKey = Enum.KeyCode.LeftControl
+	Title = "Debz x Eks One SC " .. Fluent.Version,
+	SubTitle = "by debrizech & eks one",
+	TabWidth = 160,
+	Size = UDim2.fromOffset(580, 460),
+	Acrylic = true,
+	Theme = "Ocean",
+	MinimizeKey = Enum.KeyCode.LeftControl
 })
 
--- 🧭 Menambahkan Tab
 local Tabs = {
-    Utama = Window:AddTab({ Title = "Main", Icon = "home" }),
-    Pengaturan = Window:AddTab({ Title = "Pengaturan", Icon = "settings" }),
-    Tentang = Window:AddTab({ Title = "Tentang", Icon = "info" })
+	Utama = Window:AddTab({ Title = "Utama", Icon = "activity" }),
+	Settings = Window:AddTab({ Title = "Pengaturan", Icon = "settings" }),
+	Credit = Window:AddTab({ Title = "Credit", Icon = "heart" })
 }
 
-local Options = Fluent.Options
+local function notify(title, content)
+	Fluent:Notify({
+		Title = title,
+		Content = content,
+		Duration = 4
+	})
+end
 
--- 🔔 Notifikasi awal
-Fluent:Notify({
-    Title = "Berhasil",
-    Content = "Script berhasil dimuat!",
-    Duration = 6
-})
-
-local player = game.Players.LocalPlayer
-local UIS = game:GetService("UserInputService")
-
--- 📌 Toggle Fitur-Fitur Roblox
-local fiturToggles = {
-    { id = "GodMode", title = "God Mode", deskripsi = "Tidak bisa mati", fungsi = function(aktif)
-        if aktif then
-            Fluent:Notify({ Title = "God Mode", Content = "Aktif", Duration = 3 })
-        else
-            Fluent:Notify({ Title = "God Mode", Content = "Nonaktif", Duration = 3 })
-        end
-    end },
-
-    { id = "SpeedHack", title = "Speed Hack", deskripsi = "Lari cepat", fungsi = function(aktif)
-        local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = aktif and 100 or 16
-        end
-    end },
-
-    { id = "AntiAFK", title = "Anti AFK", deskripsi = "Cegah kick karena AFK", fungsi = function(aktif)
-        if aktif then
-            for _, v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
-                v:Disable()
-            end
-        end
-    end },
-
-    { id = "AutoJump", title = "Lompat Otomatis", deskripsi = "Melompat setiap 2 detik", fungsi = function(aktif)
-        task.spawn(function()
-            while Options.AutoJump.Value do
-                local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-                if humanoid then humanoid:ChangeState(Enum.HumanoidStateType.Jumping) end
-                task.wait(2)
-            end
-        end)
-    -- 🛠️ Fitur Tambahan
+-- Toggle Health
+local unlimitedHealth = false
+Tabs.Utama:AddToggle("UnlimitedHealth", {
+	Title = "Unlimited Health",
+	Default = false
+}):OnChanged(function(val)
+	unlimitedHealth = val
+	if val then
+		notify("Health", "Unlimited diaktifkan.")
+		task.spawn(function()
+			while unlimitedHealth do
+				local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+				if humanoid and humanoid.Health < 100 then
+					humanoid.Health = 100
+				end
+				task.wait(2)
+			end
+		end)
+	else
+		notify("Health", "Unlimited dimatikan.")
+	end
+end)
 
 -- ESP
 local function toggleESP(enabled)
-    for _, v in pairs(game.Players:GetPlayers()) do
-        if v ~= player and v.Character and v.Character:FindFirstChild("Head") then
-            if enabled then
-                local billboard = Instance.new("BillboardGui", v.Character.Head)
-                billboard.Name = "ESP"
-                billboard.Size = UDim2.new(0, 100, 0, 40)
-                billboard.AlwaysOnTop = true
-                local label = Instance.new("TextLabel", billboard)
-                label.Size = UDim2.new(1, 0, 1, 0)
-                label.BackgroundTransparency = 1
-                label.Text = v.Name
-                label.TextColor3 = Color3.new(1, 0, 0)
-            else
-                local esp = v.Character.Head:FindFirstChild("ESP")
-                if esp then esp:Destroy() end
-            end
-        end
-    end
+	for _, plr in pairs(Players:GetPlayers()) do
+		if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Head") then
+			local head = plr.Character.Head
+			if enabled then
+				if not head:FindFirstChild("ESP") then
+					local gui = Instance.new("BillboardGui", head)
+					gui.Name = "ESP"
+					gui.Size = UDim2.new(0,100,0,40)
+					gui.AlwaysOnTop = true
+					local lbl = Instance.new("TextLabel", gui)
+					lbl.Size = UDim2.new(1,0,1,0)
+					lbl.BackgroundTransparency = 1
+					lbl.Text = plr.Name
+					lbl.TextColor3 = Color3.new(1,0,0)
+				end
+			else
+				local esp = head:FindFirstChild("ESP")
+				if esp then esp:Destroy() end
+			end
+		end
+	end
 end
 
 Tabs.Utama:AddToggle("ESP", {
-    Title = "ESP",
-    Description = "Melihat nama pemain lain dari jauh",
-    Default = false
+	Title = "ESP Player",
+	Default = false
 }):OnChanged(toggleESP)
 
 -- Fly
 local flying = false
-local function toggleFly(enabled)
-    flying = enabled
-    local char = player.Character
-    local hrp = char and char:FindFirstChild("HumanoidRootPart")
-    local bv = Instance.new("BodyVelocity")
-    bv.Name = "FlyVelocity"
-    bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-    bv.Velocity = Vector3.zero
-    bv.Parent = hrp
-
-    while flying and hrp do
-        local cam = workspace.CurrentCamera
-        bv.Velocity = cam.CFrame.LookVector * 100
-        task.wait()
-    end
-
-    if not flying and hrp:FindFirstChild("FlyVelocity") then
-        hrp:FindFirstChild("FlyVelocity"):Destroy()
-    end
-end
-
 Tabs.Utama:AddToggle("Fly", {
-    Title = "Fly",
-    Description = "Terbang bebas",
-    Default = false
-}):OnChanged(toggleFly)
+	Title = "Fly",
+	Default = false
+}):OnChanged(function(val)
+	flying = val
+	local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+	if val and hrp then
+		local bv = Instance.new("BodyVelocity")
+		bv.Name = "FlyVelocity"
+		bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+		bv.Parent = hrp
+		while flying and bv.Parent do
+			bv.Velocity = workspace.CurrentCamera.CFrame.LookVector * 100
+			task.wait()
+		end
+	else
+		local f = hrp:FindFirstChild("FlyVelocity")
+		if f then f:Destroy() end
+	end
+end)
 
 -- NoClip
 local noclip = false
 Tabs.Utama:AddToggle("NoClip", {
-    Title = "NoClip",
-    Description = "Tembus objek/pintu",
-    Default = false
+	Title = "NoClip",
+	Default = false
 }):OnChanged(function(val)
-    noclip = val
+	noclip = val
 end)
 
 RunService.Stepped:Connect(function()
-    if noclip and player.Character then
-        for _, part in pairs(player.Character:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = false
-            end
-        end
-    end
+	if noclip and LocalPlayer.Character then
+		for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+			if part:IsA("BasePart") then
+				part.CanCollide = false
+			end
+		end
+	end
 end)
 
--- AutoFarm (placeholder)
-Tabs.Utama:AddToggle("AutoFarm", {
-    Title = "AutoFarm",
-    Description = "Contoh AutoFarm sederhana",
-    Default = false
-}):OnChanged(function(enabled)
-    task.spawn(function()
-        while enabled do
-            -- Tempatkan logika farm-mu di sini
-            print("AutoFarm berjalan...")
-            task.wait(2)
-        end
-    end)
-end)
-
--- Teleport ke Pemain
+-- Teleport to Player
 Tabs.Utama:AddInput("Teleport", {
-    Title = "Teleport ke Pemain",
-    Placeholder = "Masukkan nama pemain",
-    Callback = function(name)
-        local target = game.Players:FindFirstChild(name)
-        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-            player.Character:MoveTo(target.Character.HumanoidRootPart.Position + Vector3.new(2, 0, 2))
-            Fluent:Notify({ Title = "Teleport", Content = "Berhasil teleport ke " .. name, Duration = 3 })
-        else
-            Fluent:Notify({ Title = "Teleport", Content = "Pemain tidak ditemukan!", Duration = 3 })
-        end
-    end
+	Title = "Teleport ke Pemain",
+	Placeholder = "Masukkan nama pemain",
+	Callback = function(name)
+		local target = Players:FindFirstChild(name)
+		if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+			LocalPlayer.Character:MoveTo(target.Character.HumanoidRootPart.Position + Vector3.new(2,0,2))
+			notify("Teleport", "Berhasil ke " .. name)
+		else
+			notify("Teleport", "Pemain tidak ditemukan!")
+		end
+	end
 })
 
--- Slider Speed dan JumpPower
+-- Speed & JumpPower Slider
 Tabs.Utama:AddSlider("WalkSpeed", {
-    Title = "Kecepatan Jalan",
-    Min = 16, Max = 150, Default = 16,
-    Callback = function(val)
-        local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then humanoid.WalkSpeed = val end
-    end
+	Title = "Kecepatan Jalan",
+	Min = 16,
+	Max = 150,
+	Default = 16,
+	Callback = function(val)
+		local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+		if hum then hum.WalkSpeed = val end
+	end
 })
 
 Tabs.Utama:AddSlider("JumpPower", {
-    Title = "Kekuatan Lompat",
-    Min = 50, Max = 300, Default = 50,
-    Callback = function(val)
-        local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then humanoid.JumpPower = val end
-    end
+	Title = "Kekuatan Lompat",
+	Min = 50,
+	Max = 300,
+	Default = 50,
+	Callback = function(val)
+		local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+		if hum then hum.JumpPower = val end
+	end
 })
-    end },
-}
 
--- 🧰 Tambahkan semua toggle ke tab utama
-for _, fitur in pairs(fiturToggles) do
-    local toggle = Tabs.Utama:AddToggle(fitur.id, {
-        Title = fitur.title,
-        Description = fitur.deskripsi,
-        Default = false
-    })
+-- Credit Tab
+Tabs.Credit:AddParagraph({
+	Title = "Dibuat oleh:",
+	Content = "debrizech & eks one\nMenggunakan Fluent UI by zuplae"
+})
 
-    toggle:OnChanged(function(value)
-        fitur.fungsi(value)
-    end)
-end
 
--- ⚙️ SaveManager & InterfaceManager Setup
+
+-- Addons:
+-- SaveManager (Allows you to have a configuration system)
+-- InterfaceManager (Allows you to have a interface managment system)
+
+-- Hand the library over to our managers
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
+
+-- Ignore keys that are used by ThemeManager.
+-- (we dont want configs to save themes, do we?)
 SaveManager:IgnoreThemeSettings()
+
+-- You can add indexes of elements the save manager should ignore
 SaveManager:SetIgnoreIndexes({})
+
+-- use case for doing it this way:
+-- a script hub could have themes in a global folder
+-- and game configs in a separate folder per game
 InterfaceManager:SetFolder("FluentScriptHub")
 SaveManager:SetFolder("FluentScriptHub/specific-game")
 
-InterfaceManager:BuildInterfaceSection(Tabs.Pengaturan)
-SaveManager:BuildConfigSection(Tabs.Pengaturan)
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
 
--- 📝 Tab Tentang / Kredit
-Tabs.Tentang:AddParagraph({
-    Title = "Kredit",
-    Content = "Script ini dibuat oleh:\n- debrizech\n- eks one\n\nLibrary oleh zuplae (Fluent UI)"
+-- Load Notification
+Fluent:Notify({
+	Title = "Fluent",
+	Content = "Script berhasil dimuat.",
+	Duration = 8
 })
 
--- 🚀 Pilih Tab Awal & Load Config Otomatis
 Window:SelectTab(1)
 
+
+-- You can use the SaveManager:LoadAutoloadConfig() to load a config
+-- which has been marked to be one that auto loads!
+
 if not RunService:IsStudio() then
-    SaveManager:LoadAutoloadConfig()
+	SaveManager:LoadAutoloadConfig()
 end
+
+return Library, SaveManager, InterfaceManager, Mobile
