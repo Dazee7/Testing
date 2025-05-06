@@ -5872,6 +5872,8 @@ local Tabs = {
 	Credit = Window:AddTab({ Title = "Credit", Icon = "heart" })
 }
 
+do
+
 local function notify(title, content)
 	Fluent:Notify({
 		Title = title,
@@ -5975,20 +5977,32 @@ RunService.Stepped:Connect(function()
 	end
 end)
 
+local Target = "Nil"
+
 -- Teleport to Player
 Tabs.Utama:AddInput("Teleport", {
 	Title = "Teleport ke Pemain",
 	Placeholder = "Masukkan nama pemain",
 	Callback = function(name)
-		local target = Players:FindFirstChild(name)
-		if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-			LocalPlayer.Character:MoveTo(target.Character.HumanoidRootPart.Position + Vector3.new(2,0,2))
-			notify("Teleport", "Berhasil ke " .. name)
+		Target = Players:FindFirstChild(name)
+	end
+})
+
+
+Tabs.Utama:AddButton({
+	Title = "Tp Ke Tujuan",
+	Description = "Input Nama Diatas.",
+	Callback = function()
+		if Target and Target.Character and Target.Character:FindFirstChild("HumanoidRootPart") then
+			LocalPlayer.Character:MoveTo(Target.Character.HumanoidRootPart.Position + Vector3.new(2,0,2))
+			notify("Teleport", "Berhasil ke " .. Target)
 		else
 			notify("Teleport", "Pemain tidak ditemukan!")
 		end
 	end
 })
+
+
 
 -- Speed & JumpPower Slider
 Tabs.Utama:AddSlider("WalkSpeed", {
@@ -6013,12 +6027,18 @@ Tabs.Utama:AddSlider("JumpPower", {
 	end
 })
 
+-- settings
+Tabs.Settings:AddParagraph({
+	Title = "Dibuat oleh:",
+	Content = "debrizech & eks one\nMenggunakan Fluent UI by zuplae"
+})
+
 -- Credit Tab
 Tabs.Credit:AddParagraph({
 	Title = "Dibuat oleh:",
 	Content = "debrizech & eks one\nMenggunakan Fluent UI by zuplae"
 })
-
+end
 
 
 -- Addons:
@@ -6047,7 +6067,7 @@ SaveManager:BuildConfigSection(Tabs.Settings)
 
 -- Load Notification
 Fluent:Notify({
-	Title = "Fluent",
+	Title = "Debz x Eks One SC",
 	Content = "Script berhasil dimuat.",
 	Duration = 8
 })
