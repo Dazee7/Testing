@@ -1367,12 +1367,6 @@ Components.Tab = (function()
 		TabModule.TabCount = TabModule.TabCount + 1
 		local TabIndex = TabModule.TabCount
 
-		local Tab = {
-			Selected = false,
-			Name = Title,
-			Type = "Tab",
-		}
-
 		if not fischbypass then 
 			if Library:GetIcon(Icon) then
 				Icon = Library:GetIcon(Icon)
@@ -6007,30 +6001,25 @@ Tabs.Utama:AddButton({
 -- Speed & JumpPower Slider
 Tabs.Utama:AddSlider("WalkSpeed", {
 	Title = "Kecepatan Jalan",
-	Min = 16,
-	Max = 150,
-	Default = 16,
+	Min = 1,
+	Max = 3,
+	Default = 1,
 	Callback = function(val)
 		local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-		if hum then hum.WalkSpeed = val end
+		if hum then hum.WalkSpeed = val*25 end
 	end
 })
+
 
 Tabs.Utama:AddSlider("JumpPower", {
 	Title = "Kekuatan Lompat",
-	Min = 50,
-	Max = 300,
-	Default = 50,
+	Min = 1,
+	Max = 3,
+	Default = 1,
 	Callback = function(val)
 		local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-		if hum then hum.JumpPower = val end
+		if hum then hum.JumpPower = val*100 end
 	end
-})
-
--- settings
-Tabs.Settings:AddParagraph({
-	Title = "Dibuat oleh:",
-	Content = "debrizech & eks one\nMenggunakan Fluent UI by zuplae"
 })
 
 -- Credit Tab
@@ -6061,9 +6050,6 @@ SaveManager:SetIgnoreIndexes({})
 -- and game configs in a separate folder per game
 InterfaceManager:SetFolder("FluentScriptHub")
 SaveManager:SetFolder("FluentScriptHub/specific-game")
-
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-SaveManager:BuildConfigSection(Tabs.Settings)
 
 -- Load Notification
 Fluent:Notify({
