@@ -5860,7 +5860,12 @@ local Window = Fluent:CreateWindow({
 	MinimizeKey = Enum.KeyCode.LeftControl
 })
 
-do
+local Tabs = {
+	Utama = Window:AddTab({ Title = "Utama", Icon = "activity" }),
+	Settings = Window:AddTab({ Title = "Pengaturan", Icon = "settings" }),
+	Credit = Window:AddTab({ Title = "Credit", Icon = "heart" })
+}
+
 
 local function notify(title, content)
 	Fluent:Notify({
@@ -5870,13 +5875,9 @@ local function notify(title, content)
 	})
 end
 
-local mainTab = window:Tab("Utama", "rbxassetid://9886659001")
-
-local mainSection = mainTab:AddSection("Fitur Umum")
-
 -- Toggle Health
 local unlimitedHealth = false
-mainSection:AddToggle("UnlimitedHealth", {
+Tabs.Utama:AddToggle("UnlimitedHealth", {
 	Title = "Unlimited Health",
 	Default = false
 }):OnChanged(function(val)
@@ -5948,14 +5949,14 @@ local function toggleESP(enabled)
 end
 
 
-mainSection:AddToggle("ESP", {
+Tabs.Utama:AddToggle("ESP", {
 	Title = "ESP Player",
 	Default = false
 }):OnChanged(toggleESP)
 
 -- Fly
 local flying = false
-mainSection:AddToggle("Fly", {
+Tabs.Utama:AddToggle("Fly", {
 	Title = "Fly",
 	Default = false
 }):OnChanged(function(val)
@@ -5978,7 +5979,7 @@ end)
 
 -- NoClip
 local noclip = false
-mainSection:AddToggle("NoClip", {
+Tabs.Utama:AddToggle("NoClip", {
 	Title = "NoClip",
 	Default = false
 }):OnChanged(function(val)
@@ -5998,7 +5999,7 @@ end)
 local Target = "Nil"
 
 -- Teleport to Player
-mainSection:AddInput("Teleport", {
+Tabs.Utama:AddInput("Teleport", {
 	Title = "Teleport ke Pemain",
 	Placeholder = "Masukkan nama pemain",
 	Callback = function(name)
@@ -6007,7 +6008,7 @@ mainSection:AddInput("Teleport", {
 })
 
 
-mainSection:AddButton({
+Tabs.Utama:AddButton({
 	Title = "Tp Ke Tujuan",
 	Description = "Input Nama Diatas.",
 	Callback = function()
@@ -6022,7 +6023,7 @@ mainSection:AddButton({
 
 
 -- Speed & JumpPower Slider
-mainSection:AddSlider("WalkSpeed", {
+Tabs.Utama:AddSlider("WalkSpeed", {
 	Title = "Kecepatan Jalan",
 	Min = 1,
 	Max = 3,
@@ -6034,7 +6035,7 @@ mainSection:AddSlider("WalkSpeed", {
 })
 
 
-mainSection:AddSlider("JumpPower", {
+Tabs.Utama:AddSlider("JumpPower", {
 	Title = "Kekuatan Lompat",
 	Min = 1,
 	Max = 3,
@@ -6044,22 +6045,6 @@ mainSection:AddSlider("JumpPower", {
 		if hum then hum.JumpPower = val*100 end
 	end
 })
-
-local settingsTab = window:Tab("Pengaturan", "rbxassetid://9886659406")
-local settingsSection = settingsTab:AddSection("Pengaturan GUI")
-settingsSection:AddButton("Ganti Tema", function()
-    Library.Theme = "Ocean" -- Ganti ke tema lain jika sudah ditambahkan
-    Creator.UpdateTheme()
-end)
-
-
--- Tambah tab credit
-local creditTab = window:Tab("Credit", "rbxassetid://9886659671")
-local creditSection = creditTab:AddSection("Dibuat Oleh")
-creditSection:AddButton("Debz x Eks One", function()
-    setclipboard("dsc.gg/hydrahub")
-    print("Link dicopy ke clipboard")
-end)
 
 
 -- Addons:
@@ -6083,6 +6068,14 @@ SaveManager:SetIgnoreIndexes({})
 InterfaceManager:SetFolder("FluentScriptHub")
 SaveManager:SetFolder("FluentScriptHub/specific-game")
 
+--- Tambah tab credit
+Tabs.Credit:AddSection("Dibuat Oleh")
+Tabs.Credit:AddButton("Debz x Eks One", function()
+    setclipboard("dsc.gg/hydrahub")
+    print("Link dicopy ke clipboard")
+end)
+
+
 -- Load Notification
 Fluent:Notify({
 	Title = "Debz x Eks One SC",
@@ -6092,6 +6085,8 @@ Fluent:Notify({
 
 Window:SelectTab(1)
 
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
 
 -- You can use the SaveManager:LoadAutoloadConfig() to load a config
 -- which has been marked to be one that auto loads!
