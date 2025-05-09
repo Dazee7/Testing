@@ -5860,12 +5860,6 @@ local Window = Fluent:CreateWindow({
 	MinimizeKey = Enum.KeyCode.LeftControl
 })
 
-local Tabs = {
-	Utama = Window:AddTab({ Title = "Utama", Icon = "activity" }),
-	Settings = Window:AddTab({ Title = "Pengaturan", Icon = "settings" }),
-	Credit = Window:AddTab({ Title = "Credit", Icon = "heart" })
-}
-
 do
 
 local function notify(title, content)
@@ -5876,9 +5870,13 @@ local function notify(title, content)
 	})
 end
 
+local mainTab = window:Tab("Utama", "rbxassetid://9886659001")
+
+local mainSection = mainTab:AddSection("Fitur Umum")
+
 -- Toggle Health
 local unlimitedHealth = false
-Tabs.Utama:AddToggle("UnlimitedHealth", {
+mainSection:AddToggle("UnlimitedHealth", {
 	Title = "Unlimited Health",
 	Default = false
 }):OnChanged(function(val)
@@ -5901,37 +5899,63 @@ end)
 
 -- ESP
 local function toggleESP(enabled)
-	for _, plr in pairs(Players:GetPlayers()) do
-		if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Head") then
-			local head = plr.Character.Head
+	for _, plr in pairs(game.Players:GetPlayers()) do
+		if plr ~= game.Players.LocalPlayer and plr.Character and plr.Character:FindFirstChild("Head") then
+			local char = plr.Character
+			local head = char:FindFirstChild("Head")
+
 			if enabled then
-				if not head:FindFirstChild("ESP") then
-					local gui = Instance.new("BillboardGui", head)
-					gui.Name = "ESP"
-					gui.Size = UDim2.new(0,100,0,40)
-					gui.AlwaysOnTop = true
-					local lbl = Instance.new("TextLabel", gui)
-					lbl.Size = UDim2.new(1,0,1,0)
-					lbl.BackgroundTransparency = 1
-					lbl.Text = plr.Name
-					lbl.TextColor3 = Color3.new(1,0,0)
+				-- Tambah Billboard GUI (Nama Tebal)
+				if not head:FindFirstChild("ESP_Name") then
+					local espGui = Instance.new("BillboardGui", head)
+					espGui.Name = "ESP_Name"
+					espGui.Size = UDim2.new(0, 100, 0, 40)
+					espGui.AlwaysOnTop = true
+					espGui.StudsOffset = Vector3.new(0, 2, 0)
+
+					local nameLabel = Instance.new("TextLabel", espGui)
+					nameLabel.Size = UDim2.new(1, 0, 1, 0)
+					nameLabel.BackgroundTransparency = 1
+					nameLabel.Text = plr.Name
+					nameLabel.TextColor3 = Color3.new(1, 0, 0)
+					nameLabel.TextStrokeTransparency = 0 -- Tambah outline
+					nameLabel.TextScaled = true
+					nameLabel.Font = Enum.Font.GothamBold
+				end
+
+				-- Tambah BoxHandleAdornment (Kotak 3D)
+				if not char:FindFirstChild("ESP_Box") then
+					local adorn = Instance.new("BoxHandleAdornment")
+					adorn.Name = "ESP_Box"
+					adorn.Adornee = char:FindFirstChild("HumanoidRootPart")
+					adorn.Parent = char
+					adorn.AlwaysOnTop = true
+					adorn.ZIndex = 10
+					adorn.Size = Vector3.new(4, 6, 2)
+					adorn.Transparency = 0.5
+					adorn.Color3 = Color3.new(1, 0, 0)
 				end
 			else
-				local esp = head:FindFirstChild("ESP")
-				if esp then esp:Destroy() end
+				-- Hapus ESP jika dinonaktifkan
+				local espGui = head:FindFirstChild("ESP_Name")
+				if espGui then espGui:Destroy() end
+
+				local adorn = char:FindFirstChild("ESP_Box")
+				if adorn then adorn:Destroy() end
 			end
 		end
 	end
 end
 
-Tabs.Utama:AddToggle("ESP", {
+
+mainSection:AddToggle("ESP", {
 	Title = "ESP Player",
 	Default = false
 }):OnChanged(toggleESP)
 
 -- Fly
 local flying = false
-Tabs.Utama:AddToggle("Fly", {
+mainSection:AddToggle("Fly", {
 	Title = "Fly",
 	Default = false
 }):OnChanged(function(val)
@@ -5954,7 +5978,7 @@ end)
 
 -- NoClip
 local noclip = false
-Tabs.Utama:AddToggle("NoClip", {
+mainSection:AddToggle("NoClip", {
 	Title = "NoClip",
 	Default = false
 }):OnChanged(function(val)
@@ -5974,7 +5998,7 @@ end)
 local Target = "Nil"
 
 -- Teleport to Player
-Tabs.Utama:AddInput("Teleport", {
+mainSection:AddInput("Teleport", {
 	Title = "Teleport ke Pemain",
 	Placeholder = "Masukkan nama pemain",
 	Callback = function(name)
@@ -5983,7 +6007,7 @@ Tabs.Utama:AddInput("Teleport", {
 })
 
 
-Tabs.Utama:AddButton({
+mainSection:AddButton({
 	Title = "Tp Ke Tujuan",
 	Description = "Input Nama Diatas.",
 	Callback = function()
@@ -5997,9 +6021,8 @@ Tabs.Utama:AddButton({
 })
 
 
-
 -- Speed & JumpPower Slider
-Tabs.Utama:AddSlider("WalkSpeed", {
+mainSection:AddSlider("WalkSpeed", {
 	Title = "Kecepatan Jalan",
 	Min = 1,
 	Max = 3,
@@ -6011,7 +6034,7 @@ Tabs.Utama:AddSlider("WalkSpeed", {
 })
 
 
-Tabs.Utama:AddSlider("JumpPower", {
+mainSection:AddSlider("JumpPower", {
 	Title = "Kekuatan Lompat",
 	Min = 1,
 	Max = 3,
@@ -6022,12 +6045,21 @@ Tabs.Utama:AddSlider("JumpPower", {
 	end
 })
 
--- Credit Tab
-Tabs.Credit:AddParagraph({
-	Title = "Dibuat oleh:",
-	Content = "debrizech & eks one\nMenggunakan Fluent UI by zuplae"
-})
-end
+local settingsTab = window:Tab("Pengaturan", "rbxassetid://9886659406")
+local settingsSection = settingsTab:AddSection("Pengaturan GUI")
+settingsSection:AddButton("Ganti Tema", function()
+    Library.Theme = "Ocean" -- Ganti ke tema lain jika sudah ditambahkan
+    Creator.UpdateTheme()
+end)
+
+
+-- Tambah tab credit
+local creditTab = window:Tab("Credit", "rbxassetid://9886659671")
+local creditSection = creditTab:AddSection("Dibuat Oleh")
+creditSection:AddButton("Debz x Eks One", function()
+    setclipboard("dsc.gg/hydrahub")
+    print("Link dicopy ke clipboard")
+end)
 
 
 -- Addons:
